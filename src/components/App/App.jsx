@@ -1,43 +1,49 @@
 import { Component } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Searchbar } from '../Searchbar/Searchbar';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
-import { Loader } from '../Loader/Loader';
-import { Button } from '../Button/Button';
 import { Modal } from '../Modal/Modal';
 import { Box } from '../Box/Box';
 
 export class App extends Component {
   state = {
-    images: null,
-    currentSearch: '',
-    showModal: false,
+    searchImg: '',
+    largeImageURL: null,
   };
 
-  componentDidMount() {
-    fetch(
-      'https://pixabay.com/api/?key=30573332-0a11d85a4e1507990835feb20&q=cat&per_page=12&orintation=horizontal&image_type=photo'
-    )
-      .then(res => res.json())
-      .then(({ hits }) => this.setState({ images: hits }));
-  }
+  // componentDidMount() {
+  //   this.setState({ loading: true });
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
+  //     fetch(
+  //       'https://pixabay.com/api/?key=30573332-0a11d85a4e1507990835feb20&q=cat&per_page=12&orintation=horizontal&image_type=photo'
+  //     )
+  //       .then(res => res.json())
+  //       .then(({ hits }) => this.setState({ images: hits }))
+  //       .finally(this.setState({ loading: false }));
+  // }
+
+  // toggleModal = () => {
+  //   this.setState(({ showModal }) => ({
+  //     showModal: !showModal,
+  //   }));
+  // };
+
+  handleFormSubmit = searchImg => {
+    this.setState({ searchImg });
   };
 
-  handleSubmit(e) {
-    e.preventDefault();
+  showlargeImage = largeImageURL => {
+    this.setState({ largeImageURL });
+  };
 
-    console.log(e);
-    this.setState({
-      currentSearch: e.currentTarget.value,
-    });
+  closeModal = () => {
+    this.setState({ largeImageURL: null });
   }
 
   render() {
-    const { showModal, images } = this.state;
+    const { largeImageURL, searchImg } = this.state;
+
     return (
       <Box
         display="grid"
@@ -45,15 +51,17 @@ export class App extends Component {
         gridGap="16px"
         paddingBottom="24px"
       >
-        <Searchbar onSubmit={this.handleSubmit} />
-        {images && <ImageGallery images={images} />}
-        {showModal && (
-          <Modal>
-            <img src="" alt="" />
+        <Searchbar onSubmit={this.handleFormSubmit} />
+        <ImageGallery
+          searchImg={searchImg}
+          showlargeImage={this.showlargeImage}
+        />
+        {largeImageURL && (
+          <Modal onClose={this.closeModal}>
+            <img src={largeImageURL} alt="#"  />
           </Modal>
         )}
-        <Button text="Load more" />
-        <Loader />
+        <ToastContainer />
       </Box>
     );
   }
