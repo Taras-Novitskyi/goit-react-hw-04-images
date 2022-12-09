@@ -6,11 +6,9 @@ export const ImageGalleryItem = ({
   webformatURL,
   largeImageURL,
   showlargeImage,
-  id,
 }) => {
-  const imgId = `id${id}`;
   return (
-    <GalleryItem className={imgId}>
+    <GalleryItem>
       <Img
         src={webformatURL}
         alt={tags}
@@ -24,6 +22,5 @@ ImageGalleryItem.propTypes = {
   tags: PropTypes.string.isRequired,
   webformatURL: PropTypes.string.isRequired,
   largeImageURL: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
   showlargeImage: PropTypes.func.isRequired,
 };

@@ -102,7 +102,6 @@ export class ImageGallery extends Component {
                 webformatURL={webformatURL}
                 largeImageURL={largeImageURL}
                 tags={tags}
-                id={id}
               />
             ))}
           </GalleryList>
