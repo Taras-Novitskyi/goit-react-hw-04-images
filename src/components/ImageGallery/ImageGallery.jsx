@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 import { Loader } from '../Loader/Loader';
 import { Button } from '../Button/Button';
 import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
@@ -8,10 +9,15 @@ import { fetchImages } from 'servises/imagesApi';
 import { Box } from 'components/Box/Box';
 
 export class ImageGallery extends Component {
+  static propTypes = {
+    searchImg: PropTypes.string.isRequired,
+    showlargeImage: PropTypes.func.isRequired,
+  };
+
   state = {
     images: null,
     status: 'idle',
-    totalPages: 1,
+    totalImages: 1,
     page: 1,
   };
 
@@ -32,36 +38,36 @@ export class ImageGallery extends Component {
           toast.error('Sorry, no resault for your search');
         }
 
-		  if (prevState.page !== page) {
-           this.setState(prevState => ({
+        if (prevState.page !== page) {
+          this.setState(prevState => ({
             images: [...prevState.images, ...hits],
             status: 'resolve',
-		   }));
-			//   this.makeSmoothScroll(hits[0].id);
-			  return
+          }));
+
+          setTimeout(() => {
+            this.makeSmoothScroll();
+          }, 300);
+          return;
         }
 
         this.setState({
           images: hits,
           status: 'resolve',
-          totalPages: totalHits,
+          totalImages: totalHits,
         });
-	  } catch (error) {
-		  console.log(error);
+      } catch (error) {
+        console.log(error);
         toast.error('Samething happens:( please, try again');
       }
     }
   }
 
-// 	makeSmoothScroll = (id) => {
-// 		const topImg = document.querySelector(`#id${id}`);
-//     const { height: cardHeight } = topImg.getBoundingClientRect();
-
-//     window.scrollBy({
-//       top: cardHeight * 2,
-//       behavior: 'smooth',
-//     });
-//   };
+  makeSmoothScroll = () => {
+    window.scrollBy({
+      top: 828 * (this.state.page - 1),
+      behavior: 'smooth',
+    });
+  };
 
   handleLoadMoreChange = () => {
     this.setState(prevState => ({
@@ -70,7 +76,8 @@ export class ImageGallery extends Component {
   };
 
   render() {
-    const { images, status, totalPages } = this.state;
+    const { images, status, totalImages, page } = this.state;
+    const totalPages = Math.ceil(totalImages / 12);
 
     if (status === 'idle') {
       return (
@@ -94,12 +101,12 @@ export class ImageGallery extends Component {
                 showlargeImage={this.props.showlargeImage}
                 webformatURL={webformatURL}
                 largeImageURL={largeImageURL}
-				tags={tags}
-				id={id}
+                tags={tags}
+                id={id}
               />
             ))}
           </GalleryList>
-          {totalPages > 12 && (
+          {(totalImages > 12 || totalPages === page) && (
             <Button text="Load more" onClick={this.handleLoadMoreChange} />
           )}
         </>

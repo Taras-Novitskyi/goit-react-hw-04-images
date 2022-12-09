@@ -1,15 +1,20 @@
 import { BsSearch } from 'react-icons/bs';
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import {
   Header,
   SearchForm,
   SearchBtn,
   BtnLabel,
-  Input,
+	Input,
 } from './Searchbar.styled';
 
 export class Searchbar extends Component {
+  static propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+  };
+
   state = {
     searchImg: '',
   };
@@ -19,15 +24,15 @@ export class Searchbar extends Component {
   };
 
   handleSubmit = event => {
-	  event.preventDefault();
-	  event.currentTarget.reset();
+    event.preventDefault();
+    event.currentTarget.reset();
 
     if (this.state.searchImg.trim() === '') {
-		toast.error('Enter your search query');
-		this.setState({ searchImg: '' });
+      toast.error('Enter your search query');
+      this.setState({ searchImg: '' });
       return;
-	  }
-	  
+    }
+
     this.props.onSubmit(this.state.searchImg);
     this.setState({ searchImg: '' });
   };

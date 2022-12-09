@@ -12,23 +12,6 @@ export class App extends Component {
     largeImageURL: null,
   };
 
-  // componentDidMount() {
-  //   this.setState({ loading: true });
-
-  //     fetch(
-  //       'https://pixabay.com/api/?key=30573332-0a11d85a4e1507990835feb20&q=cat&per_page=12&orintation=horizontal&image_type=photo'
-  //     )
-  //       .then(res => res.json())
-  //       .then(({ hits }) => this.setState({ images: hits }))
-  //       .finally(this.setState({ loading: false }));
-  // }
-
-  // toggleModal = () => {
-  //   this.setState(({ showModal }) => ({
-  //     showModal: !showModal,
-  //   }));
-  // };
-
   handleFormSubmit = searchImg => {
     this.setState({ searchImg });
   };
