@@ -41,7 +41,7 @@ export class App extends Component {
         />
         {largeImageURL && (
           <Modal onClose={this.closeModal}>
-            <img src={largeImageURL} alt="#"  />
+            <img src={largeImageURL} alt="#" />
           </Modal>
         )}
         <ToastContainer />
