@@ -11,36 +11,42 @@ import { Box } from 'components/Box/Box';
 export class ImageGallery extends Component {
   static propTypes = {
     searchImg: PropTypes.string.isRequired,
+    page: PropTypes.number.isRequired,
     showlargeImage: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
   };
 
   state = {
     images: null,
     status: 'idle',
     totalImages: 1,
-    page: 1,
   };
 
   async componentDidUpdate(prevProps, prevState) {
     const nextImages = this.props.searchImg;
-    const { page } = this.state;
+    const { page } = this.props;
 
-    if (prevProps.searchImg !== nextImages || prevState.page !== page) {
-      this.setState({ status: 'pending' });
+    if (prevProps.searchImg !== nextImages || prevProps.page !== page) {
+      if (page === 1) {
+        this.setState({ status: 'pending' });
+      }
 
       try {
-        const { hits, totalHits } = await fetchImages(
-          nextImages,
-          this.state.page
-        );
+        const { images, totalHits } = await fetchImages(nextImages, page);
 
-        if (hits.length === 0) {
+        if (images.length === 0) {
           toast.error('Sorry, no resault for your search');
+          this.setState({
+            images,
+            status: 'resolve',
+            totalImages: totalHits,
+          });
+          return;
         }
 
-        if (prevState.page !== page) {
+        if (page !== 1) {
           this.setState(prevState => ({
-            images: [...prevState.images, ...hits],
+            images: [...prevState.images, ...images],
             status: 'resolve',
           }));
 
@@ -51,7 +57,7 @@ export class ImageGallery extends Component {
         }
 
         this.setState({
-          images: hits,
+          images,
           status: 'resolve',
           totalImages: totalHits,
         });
@@ -63,16 +69,12 @@ export class ImageGallery extends Component {
   }
 
   makeSmoothScroll = () => {
+    const intViewportHeight = window.innerHeight;
+
     window.scrollBy({
-      top: 828 * (this.state.page - 1),
+      top: intViewportHeight * 0.7,
       behavior: 'smooth',
     });
-  };
-
-  handleLoadMoreChange = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
   };
 
   render() {
@@ -96,17 +98,18 @@ export class ImageGallery extends Component {
         <>
           <GalleryList>
             {images.map(({ id, webformatURL, largeImageURL, tags }) => (
-              <ImageGalleryItem
-                key={id}
-                showlargeImage={this.props.showlargeImage}
-                webformatURL={webformatURL}
-                largeImageURL={largeImageURL}
-                tags={tags}
-              />
+              <li key={id}>
+                <ImageGalleryItem
+                  showlargeImage={this.props.showlargeImage}
+                  webformatURL={webformatURL}
+                  largeImageURL={largeImageURL}
+                  tags={tags}
+                />
+              </li>
             ))}
           </GalleryList>
           {(totalImages > 12 || totalPages === page) && (
-            <Button text="Load more" onClick={this.handleLoadMoreChange} />
+            <Button text="Load more" onClick={this.props.onClick} />
           )}
         </>
       );

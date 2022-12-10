@@ -10,10 +10,11 @@ export class App extends Component {
   state = {
     searchImg: '',
     largeImageURL: null,
+    currentPage: 1
   };
 
   handleFormSubmit = searchImg => {
-    this.setState({ searchImg });
+    this.setState({ searchImg, currentPage: 1 });
   };
 
   showlargeImage = largeImageURL => {
@@ -24,8 +25,14 @@ export class App extends Component {
     this.setState({ largeImageURL: null });
   }
 
+  onClick = () => {
+    this.setState(prevState => ({
+      currentPage: prevState.currentPage + 1,
+    }));
+  }
+
   render() {
-    const { largeImageURL, searchImg } = this.state;
+    const { largeImageURL, searchImg, currentPage } = this.state;
 
     return (
       <Box
@@ -37,7 +44,9 @@ export class App extends Component {
         <Searchbar onSubmit={this.handleFormSubmit} />
         <ImageGallery
           searchImg={searchImg}
+          page={currentPage}
           showlargeImage={this.showlargeImage}
+          onClick={this.onClick}
         />
         {largeImageURL && (
           <Modal onClose={this.closeModal}>
