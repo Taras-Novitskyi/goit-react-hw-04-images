@@ -26,6 +26,12 @@ export class ImageGallery extends Component {
     const nextImages = this.props.searchImg;
     const { page } = this.props;
 
+    if (nextImages === '') {
+      this.setState({
+        status: 'idle',
+      });
+    }
+
     if (prevProps.searchImg !== nextImages || prevProps.page !== page) {
       if (page === 1) {
         this.setState({ status: 'pending' });
@@ -36,9 +42,10 @@ export class ImageGallery extends Component {
 
         if (images.length === 0) {
           toast.error('Sorry, no resault for your search');
+
           this.setState({
             images,
-            status: 'resolve',
+            status: 'idle',
             totalImages: totalHits,
           });
           return;

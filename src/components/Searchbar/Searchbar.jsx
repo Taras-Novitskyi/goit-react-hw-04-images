@@ -29,8 +29,6 @@ export class Searchbar extends Component {
 
     if (this.state.searchImg.trim() === '') {
       toast.error('Enter your search query');
-      this.setState({ searchImg: '' });
-      return;
     }
 
     this.props.onSubmit(this.state.searchImg);
