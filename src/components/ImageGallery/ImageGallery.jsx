@@ -18,24 +18,20 @@ export class ImageGallery extends Component {
 
   state = {
     images: null,
-    status: 'idle',
     totalImages: 1,
+    isLoad: false,
+    isShowGallery: false,
   };
 
   async componentDidUpdate(prevProps, prevState) {
     const nextImages = this.props.searchImg;
     const { page } = this.props;
 
-    if (nextImages === '') {
-      this.setState({
-        status: 'idle',
-      });
-    }
-
     if (prevProps.searchImg !== nextImages || prevProps.page !== page) {
-      if (page === 1) {
-        this.setState({ status: 'pending' });
+      if (prevProps.searchImg !== nextImages) {
+        this.setState({ isShowGallery: false });
       }
+      this.setState({ isLoad: true });
 
       try {
         const { images, totalHits } = await fetchImages(nextImages, page);
@@ -45,7 +41,7 @@ export class ImageGallery extends Component {
 
           this.setState({
             images,
-            status: 'idle',
+            isShowGallery: false,
             totalImages: totalHits,
           });
           return;
@@ -54,7 +50,7 @@ export class ImageGallery extends Component {
         if (page !== 1) {
           this.setState(prevState => ({
             images: [...prevState.images, ...images],
-            status: 'resolve',
+            isShowGallery: true,
           }));
 
           setTimeout(() => {
@@ -65,12 +61,14 @@ export class ImageGallery extends Component {
 
         this.setState({
           images,
-          status: 'resolve',
+          isShowGallery: true,
           totalImages: totalHits,
         });
       } catch (error) {
         console.log(error);
         toast.error('Samething happens:( please, try again');
+      } finally {
+        this.setState({ isLoad: false });
       }
     }
   }
@@ -85,10 +83,11 @@ export class ImageGallery extends Component {
   };
 
   render() {
-    const { images, status, totalImages, page } = this.state;
+    const { images, totalImages, isLoad, isShowGallery } = this.state;
+    const { searchImg, page } = this.props;
     const totalPages = Math.ceil(totalImages / 12);
 
-    if (status === 'idle') {
+    if (searchImg === '' ) {
       return (
         <Box display="flex" justifyContent="center" as="h1">
           Enter key word from images search!
@@ -96,30 +95,29 @@ export class ImageGallery extends Component {
       );
     }
 
-    if (status === 'pending') {
-      return <Loader />;
-    }
-
-    if (status === 'resolve') {
-      return (
-        <>
-          <GalleryList>
-            {images.map(({ id, webformatURL, largeImageURL, tags }) => (
-              <li key={id}>
-                <ImageGalleryItem
-                  showlargeImage={this.props.showlargeImage}
-                  webformatURL={webformatURL}
-                  largeImageURL={largeImageURL}
-                  tags={tags}
-                />
-              </li>
-            ))}
-          </GalleryList>
-          {(totalImages > 12 || totalPages === page) && (
-            <Button text="Load more" onClick={this.props.onClick} />
-          )}
-        </>
-      );
-    }
+    return (
+      <>
+        {isShowGallery && (
+          <>
+            <GalleryList>
+              {images.map(({ id, webformatURL, largeImageURL, tags }) => (
+                <li key={id}>
+                  <ImageGalleryItem
+                    showlargeImage={this.props.showlargeImage}
+                    webformatURL={webformatURL}
+                    largeImageURL={largeImageURL}
+                    tags={tags}
+                  />
+                </li>
+              ))}
+            </GalleryList>
+            {totalImages > 12 && totalPages !== page && !isLoad && (
+              <Button text="Load more" onClick={this.props.onClick} />
+            )}
+          </>
+        )}
+        {isLoad && <Loader />}
+      </>
+    );
   }
 }
