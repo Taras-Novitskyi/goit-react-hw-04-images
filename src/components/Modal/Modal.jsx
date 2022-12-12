@@ -1,7 +1,8 @@
 import { Component } from 'react';
 import { createPortal } from 'react-dom';
+import CloseIcon from '@mui/icons-material/Close';
 import PropTypes from 'prop-types';
-import { Overlay, ModalContent } from './Modal.styled';
+import { Overlay, ModalContent, CloseIconBtn } from './Modal.styled';
 
 const modalRoot = document.querySelector('#modal-root');
 
@@ -32,10 +33,19 @@ export class Modal extends Component {
     }
   };
 
+  handleCloseIconClick = () => {
+      this.props.onClose();
+  };
+
   render() {
     return createPortal(
       <Overlay onClick={this.handleBackdropClick}>
-        <ModalContent>{this.props.children}</ModalContent>
+        <ModalContent>
+          {this.props.children}
+          <CloseIconBtn>
+            <CloseIcon onClick={this.handleCloseIconClick} />
+          </CloseIconBtn>
+        </ModalContent>
       </Overlay>,
       modalRoot
     );

@@ -15,6 +15,21 @@ export const Overlay = styled.div`
 `;
 
 export const ModalContent = styled.div`
+  position: relative;
   max-width: calc(100vw - 48px);
   max-height: calc(100vh - 24px);
+`;
+
+export const CloseIconBtn = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+  transform: scale(1)
+
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover{
+    transform: scale(1.1);
+  }
 `;
