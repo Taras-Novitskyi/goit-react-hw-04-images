@@ -16,14 +16,14 @@ export const fetchImages = async (searchImg, page) => {
     },
   });
 
-  const images = data.hits.map((image) => {
+  const images = data.hits.map(image => {
     return {
       id: image.id,
       largeImageURL: image.largeImageURL,
       webformatURL: image.webformatURL,
       tags: image.tags,
     };
-  })
+  });
 
   return { images, totalHits: data.totalHits };
 };

@@ -46,7 +46,6 @@ export function ImageGallery({ searchImg, page, showlargeImage, onClick }) {
         setImages(images);
         setTotalImages(totalHits);
         setIsShowGallery(true);
-        
       } catch (error) {
         console.log(error);
       } finally {
@@ -66,45 +65,45 @@ export function ImageGallery({ searchImg, page, showlargeImage, onClick }) {
     });
   };
 
-    const totalPages = Math.ceil(totalImages / 12);
+  const totalPages = Math.ceil(totalImages / 12);
 
-    if (searchImg === '' ) {
-      return (
-        <Box display="flex" justifyContent="center" as="h1">
-          Enter key word from images search!
-        </Box>
-      );
-    }
-
+  if (searchImg === '') {
     return (
-      <>
-        {isShowGallery && (
-          <>
-            <GalleryList>
-              {images.map(({ id, webformatURL, largeImageURL, tags }) => (
-                <li key={id}>
-                  <ImageGalleryItem
-                    showlargeImage={showlargeImage}
-                    webformatURL={webformatURL}
-                    largeImageURL={largeImageURL}
-                    tags={tags}
-                  />
-                </li>
-              ))}
-            </GalleryList>
-            {totalImages > 12 && totalPages !== page && !isLoad && (
-              <Button text="Load more" onClick={onClick} />
-            )}
-          </>
-        )}
-        {isLoad && <Loader />}
-      </>
+      <Box display="flex" justifyContent="center" as="h1">
+        Enter key word from images search!
+      </Box>
     );
+  }
+
+  return (
+    <>
+      {isShowGallery && (
+        <>
+          <GalleryList>
+            {images.map(({ id, webformatURL, largeImageURL, tags }) => (
+              <li key={id}>
+                <ImageGalleryItem
+                  showlargeImage={showlargeImage}
+                  webformatURL={webformatURL}
+                  largeImageURL={largeImageURL}
+                  tags={tags}
+                />
+              </li>
+            ))}
+          </GalleryList>
+          {totalImages > 12 && totalPages !== page && !isLoad && (
+            <Button text="Load more" onClick={onClick} />
+          )}
+        </>
+      )}
+      {isLoad && <Loader />}
+    </>
+  );
 }
 
- ImageGallery.propTypes = {
-   searchImg: PropTypes.string.isRequired,
-   page: PropTypes.number.isRequired,
-   showlargeImage: PropTypes.func.isRequired,
-   onClick: PropTypes.func.isRequired,
- };
+ImageGallery.propTypes = {
+  searchImg: PropTypes.string.isRequired,
+  page: PropTypes.number.isRequired,
+  showlargeImage: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
