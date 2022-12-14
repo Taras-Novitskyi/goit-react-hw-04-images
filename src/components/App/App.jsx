@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Searchbar } from '../Searchbar/Searchbar';
@@ -6,33 +6,27 @@ import { ImageGallery } from '../ImageGallery/ImageGallery';
 import { Modal } from '../Modal/Modal';
 import { Box } from '../Box/Box';
 
-export class App extends Component {
-  state = {
-    searchImg: '',
-    largeImageURL: null,
-    currentPage: 1
+export function App() {
+  const [searchImg, setSearchImd] = useState('');
+  const [largeImageURL, setLargeImageURL] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handleFormSubmit = searchImg => {
+    setSearchImd(searchImg);
+    setCurrentPage(1)
   };
 
-  handleFormSubmit = searchImg => {
-    this.setState({ searchImg, currentPage: 1 });
-  };
+  // const showlargeImage = largeImageURL => {
+  //   setLargeImageURL(largeImageURL)
+  // };
 
-  showlargeImage = largeImageURL => {
-    this.setState({ largeImageURL });
-  };
+  // const closeModal = () => {
+  //   setLargeImageURL(null)
+  // }
 
-  closeModal = () => {
-    this.setState({ largeImageURL: null });
+  const onClick = () => {
+    setCurrentPage(state => state + 1)
   }
-
-  onClick = () => {
-    this.setState(prevState => ({
-      currentPage: prevState.currentPage + 1,
-    }));
-  }
-
-  render() {
-    const { largeImageURL, searchImg, currentPage } = this.state;
 
     return (
       <Box
@@ -41,20 +35,19 @@ export class App extends Component {
         gridGap="16px"
         paddingBottom="24px"
       >
-        <Searchbar onSubmit={this.handleFormSubmit} />
+        <Searchbar onSubmit={handleFormSubmit} />
         <ImageGallery
           searchImg={searchImg}
           page={currentPage}
-          showlargeImage={this.showlargeImage}
-          onClick={this.onClick}
+          showlargeImage={setLargeImageURL}
+          onClick={onClick}
         />
         {largeImageURL && (
-          <Modal onClose={this.closeModal}>
+          <Modal onClose={() => setLargeImageURL(null)}>
             <img src={largeImageURL} alt="#" />
           </Modal>
         )}
         <ToastContainer />
       </Box>
     );
-  }
 }

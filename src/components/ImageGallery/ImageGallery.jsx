@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import { Loader } from '../Loader/Loader';
@@ -8,72 +8,56 @@ import { GalleryList } from './ImageGallery.styled';
 import { fetchImages } from 'servises/imagesApi';
 import { Box } from 'components/Box/Box';
 
-export class ImageGallery extends Component {
-  static propTypes = {
-    searchImg: PropTypes.string.isRequired,
-    page: PropTypes.number.isRequired,
-    showlargeImage: PropTypes.func.isRequired,
-    onClick: PropTypes.func.isRequired,
-  };
+export function ImageGallery({ searchImg, page, showlargeImage, onClick }) {
+  const [images, setImages] = useState(null);
+  const [totalImages, setTotalImages] = useState(0);
+  const [isLoad, setIsLoad] = useState(false);
+  const [isShowGallery, setIsShowGallery] = useState(false);
 
-  state = {
-    images: null,
-    totalImages: 1,
-    isLoad: false,
-    isShowGallery: false,
-  };
+  useEffect(() => {
+    setIsShowGallery(false);
+  }, [searchImg]);
 
-  async componentDidUpdate(prevProps, prevState) {
-    const nextImages = this.props.searchImg;
-    const { page } = this.props;
-
-    if (prevProps.searchImg !== nextImages || prevProps.page !== page) {
-      if (prevProps.searchImg !== nextImages) {
-        this.setState({ isShowGallery: false });
-      }
-      this.setState({ isLoad: true });
-
+  useEffect(() => {
+    async function fetchAPI() {
       try {
-        const { images, totalHits } = await fetchImages(nextImages, page);
+        setIsLoad(true);
+        const { images, totalHits } = await fetchImages(searchImg, page);
 
         if (images.length === 0) {
           toast.error('Sorry, no resault for your search');
 
-          this.setState({
-            images,
-            isShowGallery: false,
-            totalImages: totalHits,
-          });
+          setIsShowGallery(false);
+          setTotalImages(0);
+          setImages(null);
           return;
         }
 
         if (page !== 1) {
-          this.setState(prevState => ({
-            images: [...prevState.images, ...images],
-            isShowGallery: true,
-          }));
+          setImages(state => [...state, ...images]);
+          setIsShowGallery(true);
 
           setTimeout(() => {
-            this.makeSmoothScroll();
+            makeSmoothScroll();
           }, 300);
           return;
         }
 
-        this.setState({
-          images,
-          isShowGallery: true,
-          totalImages: totalHits,
-        });
+        setImages(images);
+        setTotalImages(totalHits);
+        setIsShowGallery(true);
+        
       } catch (error) {
         console.log(error);
-        toast.error('Samething happens:( please, try again');
       } finally {
-        this.setState({ isLoad: false });
+        setIsLoad(false);
       }
     }
-  }
 
-  makeSmoothScroll = () => {
+    fetchAPI();
+  }, [page, searchImg]);
+
+  const makeSmoothScroll = () => {
     const intViewportHeight = window.innerHeight;
 
     window.scrollBy({
@@ -82,9 +66,6 @@ export class ImageGallery extends Component {
     });
   };
 
-  render() {
-    const { images, totalImages, isLoad, isShowGallery } = this.state;
-    const { searchImg, page } = this.props;
     const totalPages = Math.ceil(totalImages / 12);
 
     if (searchImg === '' ) {
@@ -103,7 +84,7 @@ export class ImageGallery extends Component {
               {images.map(({ id, webformatURL, largeImageURL, tags }) => (
                 <li key={id}>
                   <ImageGalleryItem
-                    showlargeImage={this.props.showlargeImage}
+                    showlargeImage={showlargeImage}
                     webformatURL={webformatURL}
                     largeImageURL={largeImageURL}
                     tags={tags}
@@ -112,12 +93,18 @@ export class ImageGallery extends Component {
               ))}
             </GalleryList>
             {totalImages > 12 && totalPages !== page && !isLoad && (
-              <Button text="Load more" onClick={this.props.onClick} />
+              <Button text="Load more" onClick={onClick} />
             )}
           </>
         )}
         {isLoad && <Loader />}
       </>
     );
-  }
 }
+
+ ImageGallery.propTypes = {
+   searchImg: PropTypes.string.isRequired,
+   page: PropTypes.number.isRequired,
+   showlargeImage: PropTypes.func.isRequired,
+   onClick: PropTypes.func.isRequired,
+ };
