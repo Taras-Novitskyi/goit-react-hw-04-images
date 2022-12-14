@@ -7,22 +7,14 @@ import { Modal } from '../Modal/Modal';
 import { Box } from '../Box/Box';
 
 export function App() {
-  const [searchImg, setSearchImd] = useState('');
+  const [searchImg, setSearchImg] = useState('');
   const [largeImageURL, setLargeImageURL] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleFormSubmit = searchImg => {
-    setSearchImd(searchImg);
+    setSearchImg(searchImg);
     setCurrentPage(1)
   };
-
-  // const showlargeImage = largeImageURL => {
-  //   setLargeImageURL(largeImageURL)
-  // };
-
-  // const closeModal = () => {
-  //   setLargeImageURL(null)
-  // }
 
   const onClick = () => {
     setCurrentPage(state => state + 1)

@@ -1,5 +1,5 @@
 import { BsSearch } from 'react-icons/bs';
-import { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import {
@@ -10,35 +10,28 @@ import {
 	Input,
 } from './Searchbar.styled';
 
-export class Searchbar extends Component {
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
+export function Searchbar({onSubmit}) {
+  const [searchImg, setSearchImg] = useState('');
+
+  const handleSearchCheange = event => {
+    setSearchImg(event.currentTarget.value.toLowerCase());
   };
 
-  state = {
-    searchImg: '',
-  };
-
-  handleSearchCheange = event => {
-    this.setState({ searchImg: event.currentTarget.value.toLowerCase() });
-  };
-
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
     event.currentTarget.reset();
 
-    if (this.state.searchImg.trim() === '') {
+    if (searchImg.trim() === '') {
       toast.error('Enter your search query');
     }
 
-    this.props.onSubmit(this.state.searchImg);
-    this.setState({ searchImg: '' });
+    onSubmit(searchImg);
+    setSearchImg('');
   };
 
-  render() {
     return (
       <Header>
-        <SearchForm onSubmit={this.handleSubmit}>
+        <SearchForm onSubmit={handleSubmit}>
           <SearchBtn type="submit">
             <BsSearch />
             <BtnLabel>Search</BtnLabel>
@@ -50,10 +43,13 @@ export class Searchbar extends Component {
             name="input"
             autoFocus
             placeholder="Search images and photos"
-            onChange={this.handleSearchCheange}
+            onChange={handleSearchCheange}
           />
         </SearchForm>
       </Header>
     );
-  }
-}
+};
+
+Searchbar.propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+  };
