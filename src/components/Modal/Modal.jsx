@@ -15,7 +15,7 @@ export function Modal({ onClose, children }) {
       window.removeEventListener('keydown', handleKeyDown);
       (document.body.style.overflow = 'unset');
   };
-  }, []);
+  });
 
   const handleKeyDown = e => {
     if (e.code === 'Escape') {
