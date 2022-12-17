@@ -13,7 +13,7 @@ export function Modal({ onClose, children }) {
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      (document.body.style.overflow = 'unset');
+      document.body.style.overflow = 'unset';
   };
   });
 
